@@ -89,7 +89,7 @@ class User(db.Model):
         """
         Serializes a User object
         """
-        return {"id": self.id, "first_name": self.first_name, "last_name": self.last_name,"email": self.email, "current_balance": self.curr_amt, "categories": [c.simpleSerialize() for c in self.categories], "expenses": [c.serialize() for c in self.expenses], "incomes": [c.serialize() for c in self.incomes]}
+        return {"id": self.id, "first_name": self.first_name, "last_name": self.last_name,"email": self.email, "username": self.username, "current_balance": self.curr_amt, "categories": [c.simpleSerialize() for c in self.categories], "expenses": [c.serialize() for c in self.expenses], "incomes": [c.serialize() for c in self.incomes]}
 
 
 class Category(db.Model):

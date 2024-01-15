@@ -219,6 +219,9 @@ def create_expense():
     created, expense = expenses_dao.create_expense(user, name, description, category, amount, date)
     if not created:
         return failure_response("User does not exist")
+    user = users_dao.get_user_by_session_token(session_token)
+    user.curr_amt = user.curr_amt-amount
+    db.session.commit()
     return success_response(expense.serialize(), 201)
 
 @app.route("/api/expense/<int:id>/", methods=["DELETE"])
@@ -257,7 +260,10 @@ def get_expense(id):
     
     result, expense = expenses_dao.get_expense_by_id(id)
     if result:
+        user.curr_amt = user.curr_amt+expense.amount
+        db.session.commit()
         return success_response(expense.serialize())
+    
     return failure_response("Expense not found")
 
 @app.route("/api/expense/<int:id>/", methods=["POST"])
@@ -280,9 +286,15 @@ def update_expense(id):
     user=users_dao.get_user_by_session_token(session_token)
     if not user or not user.verify_session_token(session_token):
         return failure_response("Invalid session token")
+    prev_expense = expenses_dao.get_expense_by_id(id)
+    prev_amt=prev_expense.amount
     result, expense = expenses_dao.update_expense_by_id(id, name, description, category, amount, date)
     if result:
+        user.curr_amt = user.curr_amt-amount+prev_amt
+        db.session.commit()
         return success_response(expense.serialize())
+    user.curr_amt = user.curr_amt-amount+prev_amt
+    db.session.commit()
     return failure_response("Expense not found")
 
 @app.route("/api/expenses/")
@@ -315,6 +327,9 @@ def create_income():
     created, income = incomes_dao.create_income(user, name, description, category, amount, date)
     if not created:
         return failure_response("User does not exist")
+    user = users_dao.get_user_by_session_token(session_token)
+    user.curr_amt = user.curr_amt+amount
+    db.session.commit()
     return success_response(income.serialize(), 201)
 
 @app.route("/api/income/<int:id>/", methods=["DELETE"])
@@ -333,7 +348,10 @@ def delete_income(id):
         return failure_response("Invalid session token")
     result, income = incomes_dao.delete_income_by_id(id)
     if result:
+        user.curr_amt = user.curr_amt-income.amount
+        db.session.commit()
         return success_response(income.serialize())
+    
     return failure_response("Income not found")
 
 @app.route("/api/income/<int:id>/")
@@ -374,11 +392,16 @@ def update_income(id):
     if not success:
         return failure_response(session_token)
     user=users_dao.get_user_by_session_token(session_token)
+    prev_income = incomes_dao.get_income_by_id(id)
+    prev_amt=prev_income.amount
     if not user or not user.verify_session_token(session_token):
         return failure_response("Invalid session token")
     result, income = incomes_dao.update_income_by_id(id, name, description, category, amount, date)
     if result:
+        user.curr_amt = user.curr_amt-amount+prev_amt
+        db.session.commit() 
         return success_response(income.serialize())
+    
     return failure_response("Income not found")
 
 @app.route("/api/incomes/")
