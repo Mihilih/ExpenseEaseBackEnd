@@ -1,0 +1,7 @@
+version: "2"
+
+services:
+  demo:
+    image: "mihilih/expenseease:v1"
+    ports:
+      - "5000:5000"
