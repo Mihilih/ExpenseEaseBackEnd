@@ -44,10 +44,11 @@ def extract_token(request):
     """
     auth_header=request.headers.get("Authorization")
     if auth_header is None:
-        return False, failure_response("Missing Autherization header")
+        return False, failure_response("Missing Authorization header")
     bearer_token = auth_header.replace("Bearer", "").strip()
     if not bearer_token:
-        return False, failure_response("Invalid Autherization header")
+        return False, failure_response("Invalid Authorization header")
+    print("BEARER "+ bearer_token)
     return True, bearer_token
 
 
@@ -207,6 +208,9 @@ def create_expense():
     success, session_token = extract_token(request)
     if not success:
         return failure_response(session_token)
+    user1 = users_dao.get_user_by_session_token(session_token)
+    if not user1 or not user1.verify_session_token(session_token):
+        return failure_response("Invalid session token")
     body = json.loads(request.data)
     name=body.get("name")
     user=body.get("user")
@@ -219,8 +223,7 @@ def create_expense():
     created, expense = expenses_dao.create_expense(user, name, description, category, amount, date)
     if not created:
         return failure_response("User does not exist")
-    user = users_dao.get_user_by_session_token(session_token)
-    user.curr_amt = user.curr_amt-amount
+    user1.curr_amt = user1.curr_amt-amount
     db.session.commit()
     return success_response(expense.serialize(), 201)
 
@@ -232,6 +235,9 @@ def delete_expense(id):
     success, session_token = extract_token(request)
     if not success:
         return failure_response(session_token)
+    user1 = users_dao.get_user_by_session_token(session_token)
+    if not user1 or not user1.verify_session_token(session_token):
+        return failure_response("Invalid session token")
     success, session_token = extract_token(request)
     if not success:
         return failure_response(session_token)
@@ -274,6 +280,9 @@ def update_expense(id):
     success, session_token = extract_token(request)
     if not success:
         return failure_response(session_token)
+    user1 = users_dao.get_user_by_session_token(session_token)
+    if not user1 or not user1.verify_session_token(session_token):
+        return failure_response("Invalid session token")
     body = json.loads(request.data)
     name=body.get("name")
     description=body.get("description")
@@ -315,6 +324,10 @@ def create_income():
     success, session_token = extract_token(request)
     if not success:
         return failure_response(session_token)
+    user1 = users_dao.get_user_by_session_token(session_token)
+    if not user1 or not user1.verify_session_token(session_token):
+        return failure_response("Invalid session token")
+    print("SESSION "+ session_token)
     body = json.loads(request.data)
     name=body.get("name")
     user=body.get("user")
@@ -327,8 +340,10 @@ def create_income():
     created, income = incomes_dao.create_income(user, name, description, category, amount, date)
     if not created:
         return failure_response("User does not exist")
-    user = users_dao.get_user_by_session_token(session_token)
-    user.curr_amt = user.curr_amt+amount
+    print(session_token)
+    user2 = users_dao.get_user_by_session_token(session_token=session_token)
+    print("USER" + str(user2))
+    user2.curr_amt = user2.curr_amt+amount
     db.session.commit()
     return success_response(income.serialize(), 201)
 
@@ -340,9 +355,9 @@ def delete_income(id):
     success, session_token = extract_token(request)
     if not success:
         return failure_response(session_token)
-    success, session_token = extract_token(request)
-    if not success:
-        return failure_response(session_token)
+    user1 = users_dao.get_user_by_session_token(session_token)
+    if not user1 or not user1.verify_session_token(session_token):
+        return failure_response("Invalid session token")
     user=users_dao.get_user_by_session_token(session_token)
     if not user or not user.verify_session_token(session_token):
         return failure_response("Invalid session token")
@@ -362,9 +377,9 @@ def get_income(id):
     success, session_token = extract_token(request)
     if not success:
         return failure_response(session_token)
-    success, session_token = extract_token(request)
-    if not success:
-        return failure_response(session_token)
+    user1 = users_dao.get_user_by_session_token(session_token)
+    if not user1 or not user1.verify_session_token(session_token):
+        return failure_response("Invalid session token")
     user=users_dao.get_user_by_session_token(session_token)
     if not user or not user.verify_session_token(session_token):
         return failure_response("Invalid session token")
@@ -382,6 +397,9 @@ def update_income(id):
     success, session_token = extract_token(request)
     if not success:
         return failure_response(session_token)
+    user1 = users_dao.get_user_by_session_token(session_token)
+    if not user1 or not user1.verify_session_token(session_token):
+        return failure_response("Invalid session token")
     body = json.loads(request.data)
     name=body.get("name")
     description=body.get("description")
