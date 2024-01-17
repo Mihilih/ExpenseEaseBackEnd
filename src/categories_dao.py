@@ -25,7 +25,8 @@ def create_category(name, isexpense):
     Returns if creation was successful, and the User object
     """
     
-    possible_category=get_category_by_name(name.capitalize())
+    possible_category=get_category_by_name(name.strip().capitalize())
+    print(name.strip().capitalize())
     if possible_category is not None:
         return False, possible_category
     category = Category(name=name, isexpense=isexpense)
