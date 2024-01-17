@@ -8,6 +8,7 @@ An expense tracking app that allows user to add, edit, and delete their income a
 This app was developed as a personal project after learning Android development during the fall semester and backend development during the winter break of 2023. As I was getting into personal finance I noticed that most expense-tracking apps are too complicated and have too many features. My intention was to develop an app that is simple and has the basic features but is also user-friendly.
 
 Frontend repository: https://github.com/Mihilih/ExpenseEaseFrontEnd.git
+Backend deployed URL: http://34.29.154.243/
 
 ## Features 
 - The backend of this app consists of 4 databases and 20 routes to manage Users, Expenses, Incomes, and Categories.
