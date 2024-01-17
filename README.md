@@ -1,4 +1,7 @@
 ## ExpenseEase
+
+![logo](https://github.com/Mihilih/ExpenseEaseBackEnd/assets/72967681/c98f96b6-2058-475d-82ae-cf99c59ecde6)
+
 An expense tracking app that allows user to add, edit, and delete their income and expenses and track which categories of expenses occur the most.
 
 ## Description
